@@ -1,0 +1,12 @@
+# Runtime settings shared by the API and the pipeline Job.
+# To enable the LLM endpoints, set LLM_PROVIDER to "ollama" (or "openai" for a vLLM /
+# OpenAI-compatible server) and point LLM_BASE_URL at that service.
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: erp-copilot-config
+data:
+  LLM_PROVIDER: "none"
+  LLM_MODEL: "qwen2.5-coder:3b"
+  LLM_BASE_URL: "http://ollama:11434"
+  EMBED_MODEL: ""

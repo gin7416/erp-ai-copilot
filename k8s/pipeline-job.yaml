@@ -1,0 +1,54 @@
+# One-off batch run of the data pipeline inside the cluster:
+# raw load -> dbt build (models + data tests) -> SOP index -> retrieval regression gate.
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: erp-pipeline
+spec:
+  backoffLimit: 1
+  ttlSecondsAfterFinished: 3600
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: erp-pipeline
+    spec:
+      restartPolicy: Never
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 10001
+        seccompProfile:
+          type: RuntimeDefault
+      containers:
+        - name: pipeline
+          image: erp-ai-copilot:local
+          imagePullPolicy: IfNotPresent
+          command: ["sh", "-c"]
+          args:
+            - >-
+              python -m erp_copilot.pipeline all &&
+              python -m erp_copilot.evaluation retrieval --modes bm25 --min-hit-at-3 0.8 --no-write
+          envFrom:
+            - configMapRef:
+                name: erp-copilot-config
+          env:
+            - name: ERP_DUCKDB_PATH
+              value: /work/erp.duckdb
+            - name: ERP_INDEX_PATH
+              value: /work/sop_index.json
+          volumeMounts:
+            - name: work
+              mountPath: /work
+          resources:
+            requests:
+              cpu: 250m
+              memory: 512Mi
+            limits:
+              cpu: "1"
+              memory: 1Gi
+          securityContext:
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop: ["ALL"]
+      volumes:
+        - name: work
+          emptyDir: {}

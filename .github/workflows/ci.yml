@@ -77,3 +77,52 @@ jobs:
           curl -fsS "http://127.0.0.1:8000/search/sop?q=%E6%80%A5%E5%96%AE" | grep -q order_change
       - if: always()
         run: docker logs api || true
+
+  kubernetes:
+    name: kubernetes (deploy to a kind cluster)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Create kind cluster
+        uses: helm/kind-action@v1
+        with:
+          cluster_name: erp
+      - name: Build image and load it into the cluster
+        run: |
+          docker build -t erp-ai-copilot:local .
+          kind load docker-image erp-ai-copilot:local --name erp
+      - name: Apply manifests (kustomize)
+        run: kubectl apply -k k8s/
+      - name: Wait for API rollout and pipeline Job
+        run: |
+          kubectl -n erp-copilot rollout status deployment/erp-copilot-api --timeout=180s
+          test "$(kubectl -n erp-copilot get deploy erp-copilot-api -o jsonpath='{.status.readyReplicas}')" = "2"
+          kubectl -n erp-copilot wait --for=condition=complete job/erp-pipeline --timeout=300s
+          kubectl -n erp-copilot logs job/erp-pipeline | tail -5
+          kubectl -n erp-copilot get pods -o wide
+      - name: Pods run as non-root
+        run: |
+          pod=$(kubectl -n erp-copilot get pod -l app.kubernetes.io/name=erp-copilot-api -o jsonpath='{.items[0].metadata.name}')
+          test "$(kubectl -n erp-copilot exec "$pod" -- id -u)" = "10001"
+      - name: Smoke test through the Service
+        run: |
+          kubectl -n erp-copilot port-forward svc/erp-copilot-api 8080:80 > /tmp/port-forward.log 2>&1 &
+          for i in $(seq 1 30); do curl -fsS http://127.0.0.1:8080/health && break; sleep 2; done
+          curl -fsS -X POST http://127.0.0.1:8080/sql -H 'Content-Type: application/json' \
+            -d '{"sql":"select count(*) as n from marts.dim_warehouses"}' | tee out.json
+          grep -q '"rows":\[\[3\]\]' out.json
+          code=$(curl -s -o /dev/null -w '%{http_code}' -X POST http://127.0.0.1:8080/sql \
+            -H 'Content-Type: application/json' -d '{"sql":"drop table marts.fct_sales"}')
+          test "$code" = "400"
+          curl -fsS "http://127.0.0.1:8080/search/sop?q=%E6%80%A5%E5%96%AE" | grep -q order_change
+      - name: Rolling restart keeps the Deployment available
+        run: |
+          kubectl -n erp-copilot rollout restart deployment/erp-copilot-api
+          kubectl -n erp-copilot rollout status deployment/erp-copilot-api --timeout=180s
+      - name: Diagnostics
+        if: failure()
+        run: |
+          kubectl -n erp-copilot get all
+          kubectl -n erp-copilot describe pods
+          kubectl -n erp-copilot logs -l app.kubernetes.io/name=erp-copilot-api --tail=100 || true
+          kubectl -n erp-copilot logs job/erp-pipeline --tail=100 || true

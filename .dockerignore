@@ -4,9 +4,9 @@
 warehouse
 results
 tests
-eval
 orchestration
 **/__pycache__
 dbt/target
 dbt/logs
 logs
+k8s
