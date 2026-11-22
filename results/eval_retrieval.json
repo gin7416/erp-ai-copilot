@@ -1,0 +1,975 @@
+{
+  "n": 26,
+  "modes": {
+    "bm25": {
+      "hit@1": 0.846,
+      "hit@3": 0.962,
+      "mrr": 0.897,
+      "paraphrase_hit@3": 0.875,
+      "n_paraphrase": 8,
+      "items": [
+        {
+          "id": "r01",
+          "question": "採購金額 150 萬要誰核准？",
+          "expected": "purchasing#1",
+          "rank": 1,
+          "paraphrase": false,
+          "top3": [
+            "purchasing#1",
+            "purchasing#2",
+            "purchasing#3"
+          ]
+        },
+        {
+          "id": "r02",
+          "question": "新料號採購至少要比價幾家供應商？",
+          "expected": "purchasing#2",
+          "rank": 1,
+          "paraphrase": false,
+          "top3": [
+            "purchasing#2",
+            "supplier_delay#3",
+            "purchasing#3"
+          ]
+        },
+        {
+          "id": "r03",
+          "question": "供應商要在幾天內回覆交期？",
+          "expected": "purchasing#3",
+          "rank": 1,
+          "paraphrase": false,
+          "top3": [
+            "purchasing#3",
+            "purchasing#5",
+            "supplier_delay#3"
+          ]
+        },
+        {
+          "id": "r04",
+          "question": "貨到之後驗收要在多久內完成？",
+          "expected": "purchasing#4",
+          "rank": 1,
+          "paraphrase": false,
+          "top3": [
+            "purchasing#4",
+            "rma#2",
+            "rma#3"
+          ]
+        },
+        {
+          "id": "r05",
+          "question": "標準付款條件是什麼？",
+          "expected": "purchasing#5",
+          "rank": 1,
+          "paraphrase": false,
+          "top3": [
+            "purchasing#5",
+            "order_change#2",
+            "order_change#4"
+          ]
+        },
+        {
+          "id": "r06",
+          "question": "安全庫存怎麼計算？",
+          "expected": "inventory#1",
+          "rank": 1,
+          "paraphrase": false,
+          "top3": [
+            "inventory#1",
+            "inventory#2",
+            "inventory#5"
+          ]
+        },
+        {
+          "id": "r07",
+          "question": "庫存低於安全庫存時物管要在多久內處理？",
+          "expected": "inventory#2",
+          "rank": 1,
+          "paraphrase": false,
+          "top3": [
+            "inventory#2",
+            "inventory#1",
+            "inventory#5"
+          ]
+        },
+        {
+          "id": "r08",
+          "question": "多久做一次全面盤點？",
+          "expected": "inventory#3",
+          "rank": 1,
+          "paraphrase": false,
+          "top3": [
+            "inventory#3",
+            "inventory#4",
+            "supplier_delay#3"
+          ]
+        },
+        {
+          "id": "r09",
+          "question": "東西放太久都沒人用要怎麼處理？",
+          "expected": "inventory#4",
+          "rank": null,
+          "paraphrase": true,
+          "top3": [
+            "rma#5",
+            "supplier_delay#4",
+            "rma#1"
+          ]
+        },
+        {
+          "id": "r10",
+          "question": "北區倉的貨送到南區倉要幾天？",
+          "expected": "inventory#5",
+          "rank": 1,
+          "paraphrase": true,
+          "top3": [
+            "inventory#5",
+            "data_access#1",
+            "data_access#2"
+          ]
+        },
+        {
+          "id": "r11",
+          "question": "供應商延遲幾天就要通報主管？",
+          "expected": "supplier_delay#1",
+          "rank": 1,
+          "paraphrase": false,
+          "top3": [
+            "supplier_delay#1",
+            "supplier_delay#2",
+            "supplier_delay#4"
+          ]
+        },
+        {
+          "id": "r12",
+          "question": "供應商晚交超過兩週要怎麼辦？",
+          "expected": "supplier_delay#2",
+          "rank": 3,
+          "paraphrase": true,
+          "top3": [
+            "supplier_delay#1",
+            "purchasing#2",
+            "supplier_delay#2"
+          ]
+        },
+        {
+          "id": "r13",
+          "question": "供應商一直遲到會被列入什麼名單？",
+          "expected": "supplier_delay#3",
+          "rank": 1,
+          "paraphrase": true,
+          "top3": [
+            "supplier_delay#3",
+            "supplier_delay#1",
+            "purchasing#3"
+          ]
+        },
+        {
+          "id": "r14",
+          "question": "延遲交貨的罰款上限是多少？",
+          "expected": "supplier_delay#4",
+          "rank": 1,
+          "paraphrase": false,
+          "top3": [
+            "supplier_delay#4",
+            "supplier_delay#3",
+            "order_change#4"
+          ]
+        },
+        {
+          "id": "r15",
+          "question": "企業級 SSD 的保固是幾年？",
+          "expected": "rma#1",
+          "rank": 1,
+          "paraphrase": false,
+          "top3": [
+            "rma#1",
+            "inventory#3",
+            "data_access#1"
+          ]
+        },
+        {
+          "id": "r16",
+          "question": "客戶寄回壞掉的產品，外箱要寫什麼？",
+          "expected": "rma#2",
+          "rank": 1,
+          "paraphrase": true,
+          "top3": [
+            "rma#2",
+            "rma#4",
+            "data_access#1"
+          ]
+        },
+        {
+          "id": "r17",
+          "question": "故障分析報告要在幾天內完成？",
+          "expected": "rma#3",
+          "rank": 1,
+          "paraphrase": false,
+          "top3": [
+            "rma#3",
+            "inventory#3",
+            "rma#2"
+          ]
+        },
+        {
+          "id": "r18",
+          "question": "客戶自己用錯把產品弄壞，可以免費換新嗎？",
+          "expected": "rma#4",
+          "rank": 1,
+          "paraphrase": true,
+          "top3": [
+            "rma#4",
+            "data_access#1",
+            "order_change#2"
+          ]
+        },
+        {
+          "id": "r19",
+          "question": "修好的退貨品可以當新品賣嗎？",
+          "expected": "rma#5",
+          "rank": 1,
+          "paraphrase": true,
+          "top3": [
+            "rma#5",
+            "rma#4",
+            "rma#3"
+          ]
+        },
+        {
+          "id": "r20",
+          "question": "出貨前多久還能改訂單數量？",
+          "expected": "order_change#1",
+          "rank": 1,
+          "paraphrase": false,
+          "top3": [
+            "order_change#1",
+            "order_change#4",
+            "data_access#1"
+          ]
+        },
+        {
+          "id": "r21",
+          "question": "客製化產品可以取消訂單嗎？",
+          "expected": "order_change#2",
+          "rank": 1,
+          "paraphrase": false,
+          "top3": [
+            "order_change#2",
+            "order_change#3",
+            "order_change#4"
+          ]
+        },
+        {
+          "id": "r22",
+          "question": "急單要多收多少錢？",
+          "expected": "order_change#4",
+          "rank": 1,
+          "paraphrase": false,
+          "top3": [
+            "order_change#4",
+            "data_access#1",
+            "data_access#2"
+          ]
+        },
+        {
+          "id": "r23",
+          "question": "哪些資料屬於機密？",
+          "expected": "data_access#1",
+          "rank": 2,
+          "paraphrase": false,
+          "top3": [
+            "data_access#4",
+            "data_access#1",
+            "data_access#2"
+          ]
+        },
+        {
+          "id": "r24",
+          "question": "員工離職後帳號權限多久要移除？",
+          "expected": "data_access#2",
+          "rank": 1,
+          "paraphrase": false,
+          "top3": [
+            "data_access#2",
+            "data_access#3",
+            "purchasing#1"
+          ]
+        },
+        {
+          "id": "r25",
+          "question": "可以把客戶報價貼到 ChatGPT 上問嗎？",
+          "expected": "data_access#3",
+          "rank": 2,
+          "paraphrase": true,
+          "top3": [
+            "purchasing#2",
+            "data_access#3",
+            "rma#2"
+          ]
+        },
+        {
+          "id": "r26",
+          "question": "AI 平台產生的查詢紀錄會保存多久？",
+          "expected": "data_access#5",
+          "rank": 1,
+          "paraphrase": false,
+          "top3": [
+            "data_access#5",
+            "data_access#3",
+            "data_access#4"
+          ]
+        }
+      ]
+    },
+    "dense": {
+      "hit@1": 0.885,
+      "hit@3": 0.962,
+      "mrr": 0.933,
+      "paraphrase_hit@3": 0.875,
+      "n_paraphrase": 8,
+      "items": [
+        {
+          "id": "r01",
+          "question": "採購金額 150 萬要誰核准？",
+          "expected": "purchasing#1",
+          "rank": 1,
+          "paraphrase": false,
+          "top3": [
+            "purchasing#1",
+            "purchasing#2",
+            "purchasing#3"
+          ]
+        },
+        {
+          "id": "r02",
+          "question": "新料號採購至少要比價幾家供應商？",
+          "expected": "purchasing#2",
+          "rank": 1,
+          "paraphrase": false,
+          "top3": [
+            "purchasing#2",
+            "supplier_delay#3",
+            "supplier_delay#2"
+          ]
+        },
+        {
+          "id": "r03",
+          "question": "供應商要在幾天內回覆交期？",
+          "expected": "purchasing#3",
+          "rank": 2,
+          "paraphrase": false,
+          "top3": [
+            "supplier_delay#2",
+            "purchasing#3",
+            "supplier_delay#1"
+          ]
+        },
+        {
+          "id": "r04",
+          "question": "貨到之後驗收要在多久內完成？",
+          "expected": "purchasing#4",
+          "rank": 1,
+          "paraphrase": false,
+          "top3": [
+            "purchasing#4",
+            "purchasing#3",
+            "rma#2"
+          ]
+        },
+        {
+          "id": "r05",
+          "question": "標準付款條件是什麼？",
+          "expected": "purchasing#5",
+          "rank": 1,
+          "paraphrase": false,
+          "top3": [
+            "purchasing#5",
+            "purchasing#1",
+            "order_change#2"
+          ]
+        },
+        {
+          "id": "r06",
+          "question": "安全庫存怎麼計算？",
+          "expected": "inventory#1",
+          "rank": 1,
+          "paraphrase": false,
+          "top3": [
+            "inventory#1",
+            "inventory#2",
+            "inventory#3"
+          ]
+        },
+        {
+          "id": "r07",
+          "question": "庫存低於安全庫存時物管要在多久內處理？",
+          "expected": "inventory#2",
+          "rank": 1,
+          "paraphrase": false,
+          "top3": [
+            "inventory#2",
+            "inventory#1",
+            "inventory#4"
+          ]
+        },
+        {
+          "id": "r08",
+          "question": "多久做一次全面盤點？",
+          "expected": "inventory#3",
+          "rank": 1,
+          "paraphrase": false,
+          "top3": [
+            "inventory#3",
+            "rma#3",
+            "supplier_delay#2"
+          ]
+        },
+        {
+          "id": "r09",
+          "question": "東西放太久都沒人用要怎麼處理？",
+          "expected": "inventory#4",
+          "rank": 2,
+          "paraphrase": true,
+          "top3": [
+            "rma#5",
+            "inventory#4",
+            "rma#1"
+          ]
+        },
+        {
+          "id": "r10",
+          "question": "北區倉的貨送到南區倉要幾天？",
+          "expected": "inventory#5",
+          "rank": 1,
+          "paraphrase": true,
+          "top3": [
+            "inventory#5",
+            "order_change#1",
+            "supplier_delay#2"
+          ]
+        },
+        {
+          "id": "r11",
+          "question": "供應商延遲幾天就要通報主管？",
+          "expected": "supplier_delay#1",
+          "rank": 1,
+          "paraphrase": false,
+          "top3": [
+            "supplier_delay#1",
+            "supplier_delay#2",
+            "purchasing#3"
+          ]
+        },
+        {
+          "id": "r12",
+          "question": "供應商晚交超過兩週要怎麼辦？",
+          "expected": "supplier_delay#2",
+          "rank": 1,
+          "paraphrase": true,
+          "top3": [
+            "supplier_delay#2",
+            "supplier_delay#1",
+            "purchasing#3"
+          ]
+        },
+        {
+          "id": "r13",
+          "question": "供應商一直遲到會被列入什麼名單？",
+          "expected": "supplier_delay#3",
+          "rank": 1,
+          "paraphrase": true,
+          "top3": [
+            "supplier_delay#3",
+            "supplier_delay#1",
+            "supplier_delay#2"
+          ]
+        },
+        {
+          "id": "r14",
+          "question": "延遲交貨的罰款上限是多少？",
+          "expected": "supplier_delay#4",
+          "rank": 1,
+          "paraphrase": false,
+          "top3": [
+            "supplier_delay#4",
+            "supplier_delay#2",
+            "supplier_delay#1"
+          ]
+        },
+        {
+          "id": "r15",
+          "question": "企業級 SSD 的保固是幾年？",
+          "expected": "rma#1",
+          "rank": 1,
+          "paraphrase": false,
+          "top3": [
+            "rma#1",
+            "inventory#3",
+            "inventory#1"
+          ]
+        },
+        {
+          "id": "r16",
+          "question": "客戶寄回壞掉的產品，外箱要寫什麼？",
+          "expected": "rma#2",
+          "rank": 1,
+          "paraphrase": true,
+          "top3": [
+            "rma#2",
+            "rma#1",
+            "rma#5"
+          ]
+        },
+        {
+          "id": "r17",
+          "question": "故障分析報告要在幾天內完成？",
+          "expected": "rma#3",
+          "rank": 1,
+          "paraphrase": false,
+          "top3": [
+            "rma#3",
+            "supplier_delay#2",
+            "rma#1"
+          ]
+        },
+        {
+          "id": "r18",
+          "question": "客戶自己用錯把產品弄壞，可以免費換新嗎？",
+          "expected": "rma#4",
+          "rank": 1,
+          "paraphrase": true,
+          "top3": [
+            "rma#4",
+            "rma#5",
+            "rma#1"
+          ]
+        },
+        {
+          "id": "r19",
+          "question": "修好的退貨品可以當新品賣嗎？",
+          "expected": "rma#5",
+          "rank": 1,
+          "paraphrase": true,
+          "top3": [
+            "rma#5",
+            "rma#4",
+            "rma#1"
+          ]
+        },
+        {
+          "id": "r20",
+          "question": "出貨前多久還能改訂單數量？",
+          "expected": "order_change#1",
+          "rank": 1,
+          "paraphrase": false,
+          "top3": [
+            "order_change#1",
+            "order_change#2",
+            "order_change#4"
+          ]
+        },
+        {
+          "id": "r21",
+          "question": "客製化產品可以取消訂單嗎？",
+          "expected": "order_change#2",
+          "rank": 1,
+          "paraphrase": false,
+          "top3": [
+            "order_change#2",
+            "order_change#3",
+            "rma#4"
+          ]
+        },
+        {
+          "id": "r22",
+          "question": "急單要多收多少錢？",
+          "expected": "order_change#4",
+          "rank": 1,
+          "paraphrase": false,
+          "top3": [
+            "order_change#4",
+            "order_change#2",
+            "purchasing#1"
+          ]
+        },
+        {
+          "id": "r23",
+          "question": "哪些資料屬於機密？",
+          "expected": "data_access#1",
+          "rank": 1,
+          "paraphrase": false,
+          "top3": [
+            "data_access#1",
+            "data_access#4",
+            "data_access#3"
+          ]
+        },
+        {
+          "id": "r24",
+          "question": "員工離職後帳號權限多久要移除？",
+          "expected": "data_access#2",
+          "rank": 1,
+          "paraphrase": false,
+          "top3": [
+            "data_access#2",
+            "rma#1",
+            "order_change#1"
+          ]
+        },
+        {
+          "id": "r25",
+          "question": "可以把客戶報價貼到 ChatGPT 上問嗎？",
+          "expected": "data_access#3",
+          "rank": 4,
+          "paraphrase": true,
+          "top3": [
+            "purchasing#2",
+            "purchasing#1",
+            "data_access#1"
+          ]
+        },
+        {
+          "id": "r26",
+          "question": "AI 平台產生的查詢紀錄會保存多久？",
+          "expected": "data_access#5",
+          "rank": 1,
+          "paraphrase": false,
+          "top3": [
+            "data_access#5",
+            "data_access#3",
+            "data_access#2"
+          ]
+        }
+      ]
+    },
+    "hybrid": {
+      "hit@1": 0.885,
+      "hit@3": 0.962,
+      "mrr": 0.923,
+      "paraphrase_hit@3": 0.875,
+      "n_paraphrase": 8,
+      "items": [
+        {
+          "id": "r01",
+          "question": "採購金額 150 萬要誰核准？",
+          "expected": "purchasing#1",
+          "rank": 1,
+          "paraphrase": false,
+          "top3": [
+            "purchasing#1",
+            "purchasing#2",
+            "purchasing#3"
+          ]
+        },
+        {
+          "id": "r02",
+          "question": "新料號採購至少要比價幾家供應商？",
+          "expected": "purchasing#2",
+          "rank": 1,
+          "paraphrase": false,
+          "top3": [
+            "purchasing#2",
+            "supplier_delay#3",
+            "supplier_delay#2"
+          ]
+        },
+        {
+          "id": "r03",
+          "question": "供應商要在幾天內回覆交期？",
+          "expected": "purchasing#3",
+          "rank": 1,
+          "paraphrase": false,
+          "top3": [
+            "purchasing#3",
+            "supplier_delay#2",
+            "supplier_delay#1"
+          ]
+        },
+        {
+          "id": "r04",
+          "question": "貨到之後驗收要在多久內完成？",
+          "expected": "purchasing#4",
+          "rank": 1,
+          "paraphrase": false,
+          "top3": [
+            "purchasing#4",
+            "rma#2",
+            "rma#3"
+          ]
+        },
+        {
+          "id": "r05",
+          "question": "標準付款條件是什麼？",
+          "expected": "purchasing#5",
+          "rank": 1,
+          "paraphrase": false,
+          "top3": [
+            "purchasing#5",
+            "order_change#2",
+            "order_change#4"
+          ]
+        },
+        {
+          "id": "r06",
+          "question": "安全庫存怎麼計算？",
+          "expected": "inventory#1",
+          "rank": 1,
+          "paraphrase": false,
+          "top3": [
+            "inventory#1",
+            "inventory#2",
+            "inventory#3"
+          ]
+        },
+        {
+          "id": "r07",
+          "question": "庫存低於安全庫存時物管要在多久內處理？",
+          "expected": "inventory#2",
+          "rank": 1,
+          "paraphrase": false,
+          "top3": [
+            "inventory#2",
+            "inventory#1",
+            "inventory#4"
+          ]
+        },
+        {
+          "id": "r08",
+          "question": "多久做一次全面盤點？",
+          "expected": "inventory#3",
+          "rank": 1,
+          "paraphrase": false,
+          "top3": [
+            "inventory#3",
+            "supplier_delay#3",
+            "inventory#4"
+          ]
+        },
+        {
+          "id": "r09",
+          "question": "東西放太久都沒人用要怎麼處理？",
+          "expected": "inventory#4",
+          "rank": null,
+          "paraphrase": true,
+          "top3": [
+            "rma#5",
+            "rma#1",
+            "supplier_delay#2"
+          ]
+        },
+        {
+          "id": "r10",
+          "question": "北區倉的貨送到南區倉要幾天？",
+          "expected": "inventory#5",
+          "rank": 1,
+          "paraphrase": true,
+          "top3": [
+            "inventory#5",
+            "order_change#1",
+            "inventory#2"
+          ]
+        },
+        {
+          "id": "r11",
+          "question": "供應商延遲幾天就要通報主管？",
+          "expected": "supplier_delay#1",
+          "rank": 1,
+          "paraphrase": false,
+          "top3": [
+            "supplier_delay#1",
+            "supplier_delay#2",
+            "supplier_delay#4"
+          ]
+        },
+        {
+          "id": "r12",
+          "question": "供應商晚交超過兩週要怎麼辦？",
+          "expected": "supplier_delay#2",
+          "rank": 2,
+          "paraphrase": true,
+          "top3": [
+            "supplier_delay#1",
+            "supplier_delay#2",
+            "purchasing#3"
+          ]
+        },
+        {
+          "id": "r13",
+          "question": "供應商一直遲到會被列入什麼名單？",
+          "expected": "supplier_delay#3",
+          "rank": 1,
+          "paraphrase": true,
+          "top3": [
+            "supplier_delay#3",
+            "supplier_delay#1",
+            "purchasing#3"
+          ]
+        },
+        {
+          "id": "r14",
+          "question": "延遲交貨的罰款上限是多少？",
+          "expected": "supplier_delay#4",
+          "rank": 1,
+          "paraphrase": false,
+          "top3": [
+            "supplier_delay#4",
+            "supplier_delay#2",
+            "supplier_delay#3"
+          ]
+        },
+        {
+          "id": "r15",
+          "question": "企業級 SSD 的保固是幾年？",
+          "expected": "rma#1",
+          "rank": 1,
+          "paraphrase": false,
+          "top3": [
+            "rma#1",
+            "inventory#3",
+            "data_access#1"
+          ]
+        },
+        {
+          "id": "r16",
+          "question": "客戶寄回壞掉的產品，外箱要寫什麼？",
+          "expected": "rma#2",
+          "rank": 1,
+          "paraphrase": true,
+          "top3": [
+            "rma#2",
+            "rma#4",
+            "rma#1"
+          ]
+        },
+        {
+          "id": "r17",
+          "question": "故障分析報告要在幾天內完成？",
+          "expected": "rma#3",
+          "rank": 1,
+          "paraphrase": false,
+          "top3": [
+            "rma#3",
+            "rma#1",
+            "purchasing#4"
+          ]
+        },
+        {
+          "id": "r18",
+          "question": "客戶自己用錯把產品弄壞，可以免費換新嗎？",
+          "expected": "rma#4",
+          "rank": 1,
+          "paraphrase": true,
+          "top3": [
+            "rma#4",
+            "order_change#2",
+            "rma#1"
+          ]
+        },
+        {
+          "id": "r19",
+          "question": "修好的退貨品可以當新品賣嗎？",
+          "expected": "rma#5",
+          "rank": 1,
+          "paraphrase": true,
+          "top3": [
+            "rma#5",
+            "rma#4",
+            "rma#1"
+          ]
+        },
+        {
+          "id": "r20",
+          "question": "出貨前多久還能改訂單數量？",
+          "expected": "order_change#1",
+          "rank": 1,
+          "paraphrase": false,
+          "top3": [
+            "order_change#1",
+            "order_change#4",
+            "order_change#2"
+          ]
+        },
+        {
+          "id": "r21",
+          "question": "客製化產品可以取消訂單嗎？",
+          "expected": "order_change#2",
+          "rank": 1,
+          "paraphrase": false,
+          "top3": [
+            "order_change#2",
+            "order_change#3",
+            "rma#4"
+          ]
+        },
+        {
+          "id": "r22",
+          "question": "急單要多收多少錢？",
+          "expected": "order_change#4",
+          "rank": 1,
+          "paraphrase": false,
+          "top3": [
+            "order_change#4",
+            "order_change#2",
+            "inventory#5"
+          ]
+        },
+        {
+          "id": "r23",
+          "question": "哪些資料屬於機密？",
+          "expected": "data_access#1",
+          "rank": 1,
+          "paraphrase": false,
+          "top3": [
+            "data_access#1",
+            "data_access#4",
+            "data_access#2"
+          ]
+        },
+        {
+          "id": "r24",
+          "question": "員工離職後帳號權限多久要移除？",
+          "expected": "data_access#2",
+          "rank": 1,
+          "paraphrase": false,
+          "top3": [
+            "data_access#2",
+            "inventory#4",
+            "order_change#1"
+          ]
+        },
+        {
+          "id": "r25",
+          "question": "可以把客戶報價貼到 ChatGPT 上問嗎？",
+          "expected": "data_access#3",
+          "rank": 2,
+          "paraphrase": true,
+          "top3": [
+            "purchasing#2",
+            "data_access#3",
+            "data_access#1"
+          ]
+        },
+        {
+          "id": "r26",
+          "question": "AI 平台產生的查詢紀錄會保存多久？",
+          "expected": "data_access#5",
+          "rank": 1,
+          "paraphrase": false,
+          "top3": [
+            "data_access#5",
+            "data_access#3",
+            "data_access#4"
+          ]
+        }
+      ]
+    }
+  },
+  "meta": {
+    "generated_at": "2026-11-22 12:22 UTC",
+    "machine": "Darwin arm64",
+    "python": "3.13.6",
+    "embed_model": "ollama:bge-m3",
+    "chunks": 28
+  }
+}
