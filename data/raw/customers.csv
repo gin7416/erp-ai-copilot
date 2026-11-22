@@ -1,0 +1,31 @@
+customer_id,customer_name,region,segment
+C001,Atlas Computing,中國,企業客戶
+C002,Orion Electronics,歐洲,OEM
+C003,Quartz Devices,台灣,OEM
+C004,Orion Computing,中國,企業客戶
+C005,Quartz Systems,歐洲,OEM
+C006,Cobalt Devices,中國,通路商
+C007,Quartz Digital,台灣,OEM
+C008,Polaris Digital,日本,OEM
+C009,Atlas Digital,taiwan,OEM
+C010,Polaris Systems,日本,通路商
+C011,Nova Electronics,美國,企業客戶
+C012,Orion Devices,台灣,企業客戶
+C013,Vertex Electronics,Europe,通路商
+C014,Quartz Computing,台灣,OEM
+C015,Vertex Devices,日本,OEM
+C016,Lumen Digital,中國,企業客戶
+C017,Orion Networks,中國,企業客戶
+C018,Helix Devices,日本,企業客戶
+C019,Cobalt Computing,Japan ,OEM
+C020,Atlas Systems,Japan ,通路商
+C021,Vertex Systems,中國,企業客戶
+C022,Lumen Computing,美國,通路商
+C023,Helix Computing,日本,OEM
+C024,Atlas Electronics,歐洲,企業客戶
+C025,Zenith Networks,美國,OEM
+C026,Nova Systems,中國,企業客戶
+C027,Zenith Electronics,美國,企業客戶
+C028,Polaris Networks,美國,企業客戶
+C029,Vertex Networks,台灣,企業客戶
+C030,Cobalt Digital,日本,OEM

@@ -1,0 +1,212 @@
+# Text-to-SQL golden set. Each reference SQL is executed against the warehouse to get the
+# expected result; candidates are compared on result sets (row order ignored, numbers rounded).
+- id: e01
+  level: easy
+  question: 總共有幾位客戶？
+  sql: SELECT count(*) FROM marts.dim_customers
+- id: e02
+  level: easy
+  question: 日本有幾位客戶？
+  sql: SELECT count(*) FROM marts.dim_customers WHERE region = '日本'
+- id: e03
+  level: easy
+  question: 每個產品類別各有幾個產品？
+  sql: SELECT category, count(*) FROM marts.dim_products GROUP BY category
+- id: e04
+  level: easy
+  question: 牌價最高的產品是哪一個？
+  sql: SELECT product_name FROM marts.dim_products ORDER BY list_price DESC LIMIT 1
+- id: e05
+  level: easy
+  question: 2026 年 3 月有幾張未取消的銷售訂單？
+  sql: >
+    SELECT count(DISTINCT order_id) FROM marts.fct_sales
+    WHERE status <> 'cancelled' AND order_month = DATE '2026-03-01'
+- id: e06
+  level: easy
+  question: 目前有幾張採購單還沒到貨？
+  sql: SELECT count(*) FROM marts.fct_purchase_orders WHERE status = 'open'
+- id: e07
+  level: easy
+  question: 已取消的銷售訂單總共有幾張？
+  sql: SELECT count(DISTINCT order_id) FROM marts.fct_sales WHERE status = 'cancelled'
+- id: e08
+  level: easy
+  question: 合約交期最長的供應商是哪一家？
+  sql: SELECT supplier_name FROM marts.dim_suppliers ORDER BY nominal_lead_time_days DESC LIMIT 1
+- id: e09
+  level: easy
+  question: 有幾家供應商在台灣？
+  sql: SELECT count(*) FROM marts.dim_suppliers WHERE country = '台灣'
+- id: e10
+  level: easy
+  question: 2025 年的總營收是多少？
+  sql: >
+    SELECT sum(revenue) FROM marts.fct_sales
+    WHERE status <> 'cancelled' AND order_date >= DATE '2025-01-01' AND order_date < DATE '2026-01-01'
+- id: e11
+  level: easy
+  question: 南區倉在哪個城市？
+  sql: SELECT city FROM marts.dim_warehouses WHERE warehouse_name = '南區倉'
+- id: e12
+  level: easy
+  question: 已到貨的採購單平均延遲幾天？
+  sql: SELECT avg(days_late) FROM marts.fct_purchase_orders WHERE status = 'received'
+- id: m01
+  level: medium
+  question: 2025 年各地區的營收是多少？
+  sql: >
+    SELECT c.region, sum(s.revenue) FROM marts.fct_sales s JOIN marts.dim_customers c USING (customer_id)
+    WHERE s.status <> 'cancelled' AND s.order_date >= DATE '2025-01-01' AND s.order_date < DATE '2026-01-01'
+    GROUP BY c.region
+- id: m02
+  level: medium
+  question: 營收最高的前 5 名客戶是誰？
+  sql: >
+    SELECT c.customer_name FROM marts.fct_sales s JOIN marts.dim_customers c USING (customer_id)
+    WHERE s.status <> 'cancelled' GROUP BY c.customer_name ORDER BY sum(s.revenue) DESC LIMIT 5
+- id: m03
+  level: medium
+  question: 各產品類別的毛利率是多少？
+  sql: >
+    SELECT p.category, sum(s.gross_margin) / sum(s.revenue) FROM marts.fct_sales s
+    JOIN marts.dim_products p USING (product_id) WHERE s.status <> 'cancelled' GROUP BY p.category
+- id: m04
+  level: medium
+  question: 2026 年 1 月到 6 月每個月的營收是多少？
+  sql: >
+    SELECT order_month, sum(revenue) FROM marts.fct_sales
+    WHERE status <> 'cancelled' AND order_month BETWEEN DATE '2026-01-01' AND DATE '2026-06-01'
+    GROUP BY order_month
+- id: m05
+  level: medium
+  question: 哪一家供應商的延遲到貨比例最高？
+  sql: >
+    SELECT d.supplier_name FROM marts.fct_purchase_orders f JOIN marts.dim_suppliers d USING (supplier_id)
+    WHERE f.status = 'received' GROUP BY d.supplier_name ORDER BY avg(f.is_late::INT) DESC LIMIT 1
+- id: m06
+  level: medium
+  question: 每家供應商的準時交貨率是多少？
+  sql: >
+    SELECT d.supplier_name, 1 - avg(f.is_late::INT) FROM marts.fct_purchase_orders f
+    JOIN marts.dim_suppliers d USING (supplier_id) WHERE f.status = 'received' GROUP BY d.supplier_name
+- id: m07
+  level: medium
+  question: 最新的庫存快照中，哪些料號在哪個倉庫低於安全庫存？
+  sql: >
+    SELECT p.sku, w.warehouse_name FROM marts.fct_inventory i
+    JOIN marts.dim_products p USING (product_id) JOIN marts.dim_warehouses w USING (warehouse_id)
+    WHERE i.snapshot_date = (SELECT max(snapshot_date) FROM marts.fct_inventory) AND i.below_safety_stock
+- id: m08
+  level: medium
+  question: 最新的庫存快照中，每個倉庫有幾個品項低於安全庫存？
+  sql: >
+    SELECT w.warehouse_name, count(*) FROM marts.fct_inventory i JOIN marts.dim_warehouses w USING (warehouse_id)
+    WHERE i.snapshot_date = (SELECT max(snapshot_date) FROM marts.fct_inventory) AND i.below_safety_stock
+    GROUP BY w.warehouse_name
+- id: m09
+  level: medium
+  question: 2025 年採購金額最高的供應商是哪一家？
+  sql: >
+    SELECT d.supplier_name FROM marts.fct_purchase_orders f JOIN marts.dim_suppliers d USING (supplier_id)
+    WHERE f.order_date >= DATE '2025-01-01' AND f.order_date < DATE '2026-01-01'
+    GROUP BY d.supplier_name ORDER BY sum(f.amount) DESC LIMIT 1
+- id: m10
+  level: medium
+  question: 企業級 SSD 在 2026 年總共賣了幾顆？
+  sql: >
+    SELECT sum(s.quantity) FROM marts.fct_sales s JOIN marts.dim_products p USING (product_id)
+    WHERE p.category = 'Enterprise SSD' AND s.status <> 'cancelled' AND s.order_date >= DATE '2026-01-01'
+- id: m11
+  level: medium
+  question: 每種客戶類型各有幾張未取消的訂單？
+  sql: >
+    SELECT c.segment, count(DISTINCT s.order_id) FROM marts.fct_sales s JOIN marts.dim_customers c USING (customer_id)
+    WHERE s.status <> 'cancelled' GROUP BY c.segment
+- id: m12
+  level: medium
+  question: 平均每張未取消訂單的營收是多少？
+  sql: SELECT sum(revenue) / count(DISTINCT order_id) FROM marts.fct_sales WHERE status <> 'cancelled'
+- id: m13
+  level: medium
+  question: Delta Components 有幾張採購單延遲到貨？
+  sql: >
+    SELECT count(*) FROM marts.fct_purchase_orders f JOIN marts.dim_suppliers d USING (supplier_id)
+    WHERE d.supplier_name = 'Delta Components' AND f.is_late
+- id: m14
+  level: medium
+  question: 每個倉庫最新的總庫存量是多少？
+  sql: >
+    SELECT w.warehouse_name, sum(i.on_hand_qty) FROM marts.fct_inventory i JOIN marts.dim_warehouses w USING (warehouse_id)
+    WHERE i.snapshot_date = (SELECT max(snapshot_date) FROM marts.fct_inventory) GROUP BY w.warehouse_name
+- id: h01
+  level: hard
+  question: 2025 年營收前三名的產品是哪些？各自佔 2025 年總營收的比例是多少？
+  sql: >
+    WITH r AS (
+      SELECT p.product_name, sum(s.revenue) AS rev FROM marts.fct_sales s JOIN marts.dim_products p USING (product_id)
+      WHERE s.status <> 'cancelled' AND s.order_date >= DATE '2025-01-01' AND s.order_date < DATE '2026-01-01'
+      GROUP BY p.product_name)
+    SELECT product_name, rev / (SELECT sum(rev) FROM r) FROM r ORDER BY rev DESC LIMIT 3
+- id: h02
+  level: hard
+  question: 2026 年第一季的營收和 2025 年第一季相比成長了多少比例？
+  sql: >
+    SELECT sum(revenue) FILTER (WHERE order_date BETWEEN DATE '2026-01-01' AND DATE '2026-03-31')
+         / sum(revenue) FILTER (WHERE order_date BETWEEN DATE '2025-01-01' AND DATE '2025-03-31') - 1
+    FROM marts.fct_sales WHERE status <> 'cancelled'
+- id: h03
+  level: hard
+  question: 哪些客戶在 2026 年沒有任何未取消的訂單？
+  sql: >
+    SELECT customer_name FROM marts.dim_customers WHERE customer_id NOT IN (
+      SELECT customer_id FROM marts.fct_sales WHERE status <> 'cancelled' AND order_date >= DATE '2026-01-01')
+- id: h04
+  level: hard
+  question: 每個地區營收最高的客戶分別是誰？
+  sql: >
+    SELECT region, customer_name FROM (
+      SELECT c.region, c.customer_name, row_number() OVER (PARTITION BY c.region ORDER BY sum(s.revenue) DESC) AS rk
+      FROM marts.fct_sales s JOIN marts.dim_customers c USING (customer_id)
+      WHERE s.status <> 'cancelled' GROUP BY c.region, c.customer_name) WHERE rk = 1
+- id: h05
+  level: hard
+  question: 哪一家供應商的實際平均交期比合約交期多最多天？
+  sql: >
+    SELECT d.supplier_name FROM marts.fct_purchase_orders f JOIN marts.dim_suppliers d USING (supplier_id)
+    WHERE f.status = 'received' GROUP BY d.supplier_name, d.nominal_lead_time_days
+    ORDER BY avg(f.actual_lead_time_days) - d.nominal_lead_time_days DESC LIMIT 1
+- id: h06
+  level: hard
+  question: 在 2026-06-30 的快照中，哪些產品三個倉庫加總的庫存低於安全庫存的 3 倍？
+  sql: >
+    SELECT p.product_name FROM marts.fct_inventory i JOIN marts.dim_products p USING (product_id)
+    WHERE i.snapshot_date = DATE '2026-06-30' GROUP BY p.product_name, p.safety_stock
+    HAVING sum(i.on_hand_qty) < 3 * p.safety_stock
+- id: h07
+  level: hard
+  question: 2025 年哪一個月的未取消訂單數最多？
+  sql: >
+    SELECT order_month FROM marts.fct_sales WHERE status <> 'cancelled' AND order_date < DATE '2026-01-01'
+      AND order_date >= DATE '2025-01-01'
+    GROUP BY order_month ORDER BY count(DISTINCT order_id) DESC LIMIT 1
+- id: h08
+  level: hard
+  question: 北區倉 SSD-C1T-G4 從 2026 年 1 月到 6 月每個月底的庫存是多少？
+  sql: >
+    SELECT i.snapshot_date, i.on_hand_qty FROM marts.fct_inventory i
+    JOIN marts.dim_products p USING (product_id) JOIN marts.dim_warehouses w USING (warehouse_id)
+    WHERE p.sku = 'SSD-C1T-G4' AND w.warehouse_name = '北區倉'
+- id: h09
+  level: hard
+  question: 已出貨的訂單從下單到出貨平均要幾天？
+  sql: >
+    SELECT avg(ship_date - order_date) FROM (
+      SELECT DISTINCT order_id, order_date, ship_date FROM marts.fct_sales WHERE status = 'shipped')
+- id: h10
+  level: hard
+  question: 2026 年各客戶類型的毛利率由高到低是多少？
+  sql: >
+    SELECT c.segment, sum(s.gross_margin) / sum(s.revenue) AS gm_rate FROM marts.fct_sales s
+    JOIN marts.dim_customers c USING (customer_id)
+    WHERE s.status <> 'cancelled' AND s.order_date >= DATE '2026-01-01' GROUP BY c.segment ORDER BY gm_rate DESC

@@ -1,0 +1,28 @@
+# SOP retrieval golden set: expected chunk id = <doc>#<section number>.
+# "paraphrase: true" marks questions that avoid the document's wording (harder for keyword search).
+- {id: r01, question: 採購金額 150 萬要誰核准？, expected: purchasing#1}
+- {id: r02, question: 新料號採購至少要比價幾家供應商？, expected: purchasing#2}
+- {id: r03, question: 供應商要在幾天內回覆交期？, expected: purchasing#3}
+- {id: r04, question: 貨到之後驗收要在多久內完成？, expected: purchasing#4}
+- {id: r05, question: 標準付款條件是什麼？, expected: purchasing#5}
+- {id: r06, question: 安全庫存怎麼計算？, expected: inventory#1}
+- {id: r07, question: 庫存低於安全庫存時物管要在多久內處理？, expected: inventory#2}
+- {id: r08, question: 多久做一次全面盤點？, expected: inventory#3}
+- {id: r09, question: 東西放太久都沒人用要怎麼處理？, expected: inventory#4, paraphrase: true}
+- {id: r10, question: 北區倉的貨送到南區倉要幾天？, expected: inventory#5, paraphrase: true}
+- {id: r11, question: 供應商延遲幾天就要通報主管？, expected: supplier_delay#1}
+- {id: r12, question: 供應商晚交超過兩週要怎麼辦？, expected: supplier_delay#2, paraphrase: true}
+- {id: r13, question: 供應商一直遲到會被列入什麼名單？, expected: supplier_delay#3, paraphrase: true}
+- {id: r14, question: 延遲交貨的罰款上限是多少？, expected: supplier_delay#4}
+- {id: r15, question: 企業級 SSD 的保固是幾年？, expected: rma#1}
+- {id: r16, question: 客戶寄回壞掉的產品，外箱要寫什麼？, expected: rma#2, paraphrase: true}
+- {id: r17, question: 故障分析報告要在幾天內完成？, expected: rma#3}
+- {id: r18, question: 客戶自己用錯把產品弄壞，可以免費換新嗎？, expected: rma#4, paraphrase: true}
+- {id: r19, question: 修好的退貨品可以當新品賣嗎？, expected: rma#5, paraphrase: true}
+- {id: r20, question: 出貨前多久還能改訂單數量？, expected: order_change#1}
+- {id: r21, question: 客製化產品可以取消訂單嗎？, expected: order_change#2}
+- {id: r22, question: 急單要多收多少錢？, expected: order_change#4}
+- {id: r23, question: 哪些資料屬於機密？, expected: data_access#1}
+- {id: r24, question: 員工離職後帳號權限多久要移除？, expected: data_access#2}
+- {id: r25, question: 可以把客戶報價貼到 ChatGPT 上問嗎？, expected: data_access#3, paraphrase: true}
+- {id: r26, question: AI 平台產生的查詢紀錄會保存多久？, expected: data_access#5}

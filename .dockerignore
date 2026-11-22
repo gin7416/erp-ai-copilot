@@ -1,0 +1,12 @@
+.git
+.github
+.venv*
+warehouse
+results
+tests
+eval
+orchestration
+**/__pycache__
+dbt/target
+dbt/logs
+logs

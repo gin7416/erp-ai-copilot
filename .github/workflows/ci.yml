@@ -1,0 +1,79 @@
+name: ci
+on:
+  push:
+  pull_request:
+
+jobs:
+  tests:
+    name: tests (Python ${{ matrix.python-version }})
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version: ['3.11', '3.12', '3.13']
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+      - run: python -m pip install -e '.[dev]'
+      - name: pytest (builds the warehouse with dbt, then tests guard, Text-to-SQL, RAG, API, MCP, eval harness)
+        run: pytest -q --cov=erp_copilot --cov-report=term
+      - name: Evaluation harness self-check (oracle must score 100%) and BM25 retrieval gate
+        run: |
+          python -m erp_copilot.pipeline all
+          python -m erp_copilot.evaluation sql --provider oracle --min-accuracy 1.0 --no-write
+          python -m erp_copilot.evaluation retrieval --modes bm25 --min-hit-at-3 0.8 --no-write
+
+  airflow:
+    name: airflow (run the DAG end to end)
+    runs-on: ubuntu-latest
+    env:
+      AIRFLOW_VERSION: '3.3.2'
+      PYTHON_VERSION: '3.12'
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+      - name: Project virtualenv (what the DAG's tasks execute)
+        run: |
+          python -m venv .venv-project
+          .venv-project/bin/pip install -e .
+      - name: Airflow virtualenv (separate, pinned with the official constraints)
+        run: |
+          python -m venv .venv-airflow
+          .venv-airflow/bin/pip install "apache-airflow==${AIRFLOW_VERSION}" pytest \
+            --constraint "https://raw.githubusercontent.com/apache/airflow/constraints-${AIRFLOW_VERSION}/constraints-${PYTHON_VERSION}.txt"
+      - name: DAG structure test
+        run: .venv-airflow/bin/python -m pytest -q orchestration/tests
+      - name: Run erp_pipeline (load -> dbt build -> SOP index -> retrieval check)
+        env:
+          AIRFLOW_HOME: ${{ runner.temp }}/airflow
+          AIRFLOW__CORE__LOAD_EXAMPLES: 'False'
+          AIRFLOW__CORE__DAGS_FOLDER: ${{ github.workspace }}/orchestration/dags
+          ERP_COPILOT_HOME: ${{ github.workspace }}
+          ERP_COPILOT_PYTHON: ${{ github.workspace }}/.venv-project/bin/python
+        run: |
+          .venv-airflow/bin/airflow db migrate
+          cd orchestration && ../.venv-airflow/bin/python run_dag.py
+
+  docker:
+    name: docker (build image, start API, smoke test)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - run: docker build -t erp-ai-copilot .
+      - name: Start API without an LLM and check endpoints
+        run: |
+          docker run -d --name api -p 127.0.0.1:8000:8000 -e LLM_PROVIDER=none erp-ai-copilot
+          for i in $(seq 1 30); do curl -fsS http://127.0.0.1:8000/health && break; sleep 2; done
+          curl -fsS -X POST http://127.0.0.1:8000/sql -H 'Content-Type: application/json' \
+            -d '{"sql":"select count(*) as n from marts.dim_warehouses"}' | tee out.json
+          grep -q '"rows":\[\[3\]\]' out.json
+          code=$(curl -s -o /dev/null -w '%{http_code}' -X POST http://127.0.0.1:8000/sql \
+            -H 'Content-Type: application/json' -d '{"sql":"drop table marts.fct_sales"}')
+          test "$code" = "400"
+          curl -fsS "http://127.0.0.1:8000/search/sop?q=%E6%80%A5%E5%96%AE" | grep -q order_change
+      - if: always()
+        run: docker logs api || true

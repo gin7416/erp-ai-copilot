@@ -1,0 +1,9 @@
+supplier_id,supplier_name,country,lead_time_days
+S01,Aurora Flash Materials,台灣,21
+S02,Kestrel Semiconductor,日本,35
+S03,Hanbit Memory Works,韓國,30
+S04,Pacific Wafer Supply,美國,45
+S05,Delta Components,中國,28
+S06,Sunrise IC Packaging,台灣,18
+S07,Maple PCB Industries,越南,25
+S08,Golden Bay Logistics Parts,馬來西亞,20

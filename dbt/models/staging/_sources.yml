@@ -1,0 +1,14 @@
+version: 2
+sources:
+  - name: raw
+    description: CSV extracts landed unchanged (all VARCHAR) by `erp_copilot.pipeline load`.
+    schema: raw
+    tables:
+      - name: products
+      - name: suppliers
+      - name: warehouses
+      - name: customers
+      - name: sales_orders
+      - name: sales_order_lines
+      - name: purchase_orders
+      - name: inventory_snapshots

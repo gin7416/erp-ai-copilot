@@ -1,0 +1,22 @@
+name: erp_copilot
+version: "1.0.0"
+config-version: 2
+profile: erp_copilot
+
+model-paths: ["models"]
+test-paths: ["tests"]
+macro-paths: ["macros"]
+target-path: "target"
+clean-targets: ["target"]
+
+models:
+  erp_copilot:
+    staging:
+      +schema: staging
+      +materialized: view
+    audit:
+      +schema: audit
+      +materialized: table
+    marts:
+      +schema: marts
+      +materialized: table

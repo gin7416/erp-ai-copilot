@@ -1,0 +1,21 @@
+product_id,sku,product_name,category,unit_cost,list_price,safety_stock,supplier_id
+P001,  ssd-c512-g4 ,Client SSD 512GB PCIe Gen4,SSD,18.0,32.0,800,S01
+P002,SSD-C1T-G4,Client SSD 1TB PCIe Gen4,SSD,31.0,55.0,900,S01
+P003,SSD-C2T-G4,Client SSD 2TB PCIe Gen4,SSD,58.0,99.0,500,S02
+P004,  ssd-c1t-g5 ,Client SSD 1TB PCIe Gen5,SSD,52.0,89.0,400,S02
+P005,SSD-C2T-G5,Client SSD 2TB PCIe Gen5,SSD,95.0,159.0,300,S03
+P006,SSD-E3T8-G5,Enterprise SSD 3.84TB PCIe Gen5,Enterprise SSD,310.0,520.0,120,S03
+P007,SSD-E7T6-G5,Enterprise SSD 7.68TB PCIe Gen5,Enterprise SSD,590.0,980.0,80,S04
+P008,SSD-E15T-G5,Enterprise SSD 15.36TB PCIe Gen5,Enterprise SSD,1150.0,1890.0,40,S04
+P009,  ctl-g4-4ch ,PCIe Gen4 4-channel SSD Controller,Controller,4.2,7.5,3000,S05
+P010,CTL-G4-8CH,PCIe Gen4 8-channel SSD Controller,Controller,7.8,13.0,2500,S05
+P011,CTL-G5-8CH,PCIe Gen5 8-channel SSD Controller,Controller,14.5,24.0,1800,S06
+P012,CTL-USB-3,USB 3.2 Flash Controller,Controller,0.9,1.8,6000,S06
+P013,MC-SD-128,SD Card 128GB,Memory Card,6.5,12.0,1500,S07
+P014,MC-MSD-256,microSD Card 256GB,Memory Card,11.0,21.0,1200,S07
+P015,MC-MSD-512,microSD Card 512GB,Memory Card,21.0,38.0,700,S07
+P016,USB-64,USB Flash Drive 64GB,USB Drive,3.2,6.5,2000,S08
+P017,USB-256,USB Flash Drive 256GB,USB Drive,9.5,17.0,1000,S08
+P018,EXT-SSD-1T,Portable SSD 1TB,Portable SSD,38.0,69.0,400,S01
+P019,EXT-SSD-2T,Portable SSD 2TB,Portable SSD,66.0,115.0,250,S02
+P020,MOD-M2-HS,M.2 Heatsink Module,Accessory,2.1,5.0,900,S08

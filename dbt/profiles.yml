@@ -1,0 +1,7 @@
+erp_copilot:
+  target: dev
+  outputs:
+    dev:
+      type: duckdb
+      path: "{{ env_var('ERP_DUCKDB_PATH', '../warehouse/erp.duckdb') }}"
+      threads: 4

@@ -1,0 +1,13 @@
+.venv/
+__pycache__/
+*.pyc
+*.egg-info/
+.pytest_cache/
+.coverage
+warehouse/
+dbt/target/
+dbt/logs/
+dbt/.user.yml
+logs/
+airflow_home/
+.DS_Store
