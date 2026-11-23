@@ -34,7 +34,7 @@ flowchart LR
 |---|---|
 | **模擬資料** `generate_data.py` | 固定亂數種子產生 20 個產品、8 家供應商、30 位客戶、1,800 張銷售訂單、247 張採購單、360 筆庫存快照；**刻意埋入** 12 筆重複資料、5 筆數量 ≤ 0、大小寫與空白不一致的料號、英文拼法的地區名稱 |
 | **資料管線** `pipeline.py` + **Airflow** `orchestration/dags/` | CSV 原樣（全字串）載入 DuckDB `raw` 層並記錄載入稽核；Airflow DAG 依序執行載入 → dbt build → 建立 SOP 索引 → 檢索品質回歸檢查，任務在專案自己的 virtualenv 執行，避免與 Airflow 套件版本衝突 |
-| **dbt** `dbt/` | `staging`（清理、正規化、去重）→ `marts`（4 張維度表、3 張事實表）；`audit.dq_order_line_issues` 記錄每一筆被剔除的資料與原因；共 45 個 dbt 節點（模型 + unique／not_null／relationships／accepted_values 與自訂測試），包含「原始筆數 = 保留 + 剔除」的不遺失資料檢查 |
+| **dbt** `dbt/` | `staging`（清理、正規化、去重）→ `marts`（4 張維度表、3 張事實表）；`audit.dq_order_line_issues` 記錄每一筆被剔除的資料與原因；共 45 個 dbt 節點（16 個模型 + 29 項資料測試：unique／not_null／relationships／accepted_values 與 4 項自訂測試），包含「原始筆數 = 保留 + 剔除」的不遺失資料檢查 |
 | **語意層** `semantic.py` | 直接讀取 dbt 的欄位說明（含商業規則，例如「營收須排除已取消訂單」「最新庫存只取最新快照」）放進 LLM 提示 |
 | **SQL 防護** `sql_guard.py` + `warehouse.py` | 兩層防護：① sqlglot 解析，只允許單一 SELECT、只能查 `marts`、禁止 `read_csv` 等檔案函式、自動加 LIMIT；② DuckDB 唯讀連線、關閉外部檔案存取、查詢逾時中斷 |
 | **Text-to-SQL** `text_to_sql.py` | 中文問題 → SQL → 執行；SQL 失敗或被防護擋下時，把錯誤訊息回饋給 LLM 再修正一次 |
