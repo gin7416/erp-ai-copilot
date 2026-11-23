@@ -16,7 +16,7 @@
 flowchart LR
     A[data/raw/*.csv<br/>模擬 ERP 匯出] -->|pipeline load| B[(DuckDB<br/>raw schema)]
     B -->|dbt staging<br/>清理、型別轉換| C[(staging)]
-    C -->|dbt marts<br/>45 項資料測試| D[(marts<br/>事實表／維度表)]
+    C -->|dbt marts<br/>29 項資料測試| D[(marts<br/>事實表／維度表)]
     C --> Q[(audit<br/>被剔除的資料與原因)]
     S[docs/sop/*.md] -->|切段 + BM25 / bge-m3 向量| I[SOP 索引]
     D --> T[Text-to-SQL<br/>語意層 + SQL 防護 + 錯誤修正迴圈]
@@ -145,7 +145,7 @@ GitHub Actions 每次 push 執行四個工作：
 ## English summary
 
 An end-to-end demo on synthetic ERP / supply-chain data for a fictional storage-device company:
-CSV extracts → DuckDB `raw` → dbt `staging`/`marts` with 45 data tests and an audit table for rejected rows →
+CSV extracts → DuckDB `raw` → dbt `staging`/`marts` with 29 data tests and an audit table for rejected rows →
 Text-to-SQL with a dbt-derived semantic layer, a two-layer SQL guard (sqlglot + read-only DuckDB) and an
 error-feedback retry loop → RAG over SOP documents (Chinese bigram BM25, bge-m3 embeddings, RRF hybrid) →
 FastAPI and an MCP server. An Airflow 3 DAG orchestrates the pipeline. A golden set of 36 Chinese business
