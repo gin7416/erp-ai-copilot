@@ -2,6 +2,7 @@
 from __future__ import annotations
 
 import json
+import os
 import platform
 import statistics
 from datetime import datetime, timezone
@@ -14,7 +15,7 @@ from ..llm import ChatModel, ScriptedChat
 from ..rag import Embedder, SopIndex
 from ..semantic import schema_context
 from ..settings import PROJECT_ROOT, Settings
-from ..text_to_sql import TextToSQL
+from ..text_to_sql import Attempt, SqlAnswer, TextToSQL
 from ..warehouse import Warehouse
 from .compare import lenient_match, strict_match
 
@@ -52,7 +53,12 @@ def evaluate_sql(settings: Settings, chat_factory, configs: list[str], golden: l
                         max_attempts=attempts, few_shot=with_desc, max_rows=1000)
         items = []
         for g in golden:
-            ans = t2s.ask(g["question"])
+            try:
+                ans = t2s.ask(g["question"])
+            except Exception as exc:  # LLM timeout or unexpected error: count as wrong, keep going
+                ans = SqlAnswer(question=g["question"], ok=False, sql=None,
+                                attempts=[Attempt(raw_output="", sql="", error_type=f"error:{type(exc).__name__}",
+                                                  error=str(exc)[:200])])
             ref = reference[g["id"]]
             strict = ans.ok and strict_match(ans.rows, ref)
             lenient = ans.ok and lenient_match(ans.rows, ref)
@@ -103,18 +109,25 @@ def oracle_factory(_config: str, golden: list[dict]) -> ChatModel:
     return ScriptedChat([f"```sql\n{g['sql']}\n```" for g in golden], name="oracle")
 
 
+def _section_key(chunk_id: str) -> str:
+    return chunk_id.split("-")[0]   # "rma#1-2" (second piece of a long section) counts as "rma#1"
+
+
 def evaluate_retrieval(index: SopIndex, modes: list[str], embedder: Embedder | None = None,
-                       golden: list[dict] | None = None) -> dict:
+                       golden: list[dict] | None = None, chunk_key=_section_key, include_text: bool = True) -> dict:
     golden = golden or load_golden("golden_sop.yaml")
     out: dict[str, Any] = {"n": len(golden), "modes": {}}
     for mode in modes:
         rows, rr = [], []
         for g in golden:
-            hits = [h["chunk_id"].split("-")[0] for h in index.search(g["question"], k=5, mode=mode, embedder=embedder)]
+            hits = [chunk_key(h["chunk_id"]) for h in index.search(g["question"], k=5, mode=mode, embedder=embedder)]
             rank = hits.index(g["expected"]) + 1 if g["expected"] in hits else None
             rr.append(1 / rank if rank else 0.0)
-            rows.append({"id": g["id"], "question": g["question"], "expected": g["expected"], "rank": rank,
-                         "paraphrase": bool(g.get("paraphrase")), "top3": hits[:3]})
+            row = {"id": g["id"], "expected": g["expected"], "rank": rank,
+                   "paraphrase": bool(g.get("paraphrase")), "top3": hits[:3]}
+            if include_text:
+                row["question"] = g["question"]
+            rows.append(row)
 
         def hit_at(k: int, subset: list[dict]) -> float:
             return round(sum(1 for r in subset if r["rank"] and r["rank"] <= k) / max(len(subset), 1), 3)
@@ -129,7 +142,7 @@ def evaluate_retrieval(index: SopIndex, modes: list[str], embedder: Embedder | N
 
 def run_metadata(extra: dict | None = None) -> dict:
     return {"generated_at": datetime.now(timezone.utc).strftime("%Y-%m-%d %H:%M UTC"),
-            "machine": f"{platform.system()} {platform.machine()}", "python": platform.python_version(),
+            "machine": os.environ.get("ERP_EVAL_MACHINE") or f"{platform.system()} {platform.machine()}", "python": platform.python_version(),
             **(extra or {})}
 
 

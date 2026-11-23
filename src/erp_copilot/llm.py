@@ -20,15 +20,16 @@ class OllamaChat:
     """POST /api/chat on an Ollama server; deterministic decoding (temperature 0)."""
 
     def __init__(self, model: str, base_url: str = "http://127.0.0.1:11434", timeout_s: float = 180.0,
-                 num_ctx: int = 8192, client: httpx.Client | None = None):
+                 num_ctx: int = 8192, max_tokens: int = 512, client: httpx.Client | None = None):
         self.name = f"ollama:{model}"
-        self.model, self.num_ctx = model, num_ctx
+        self.model, self.num_ctx, self.max_tokens = model, num_ctx, max_tokens
         self.client = client or httpx.Client(base_url=base_url, timeout=timeout_s)
 
     def chat(self, messages: list[Message]) -> str:
+        # max_tokens caps runaway generations (a small model can loop for thousands of tokens)
         resp = self.client.post("/api/chat", json={
             "model": self.model, "messages": messages, "stream": False,
-            "options": {"temperature": 0, "seed": 0, "num_ctx": self.num_ctx},
+            "options": {"temperature": 0, "seed": 0, "num_ctx": self.num_ctx, "num_predict": self.max_tokens},
         })
         resp.raise_for_status()
         return resp.json()["message"]["content"]
@@ -38,15 +39,15 @@ class OpenAICompatibleChat:
     """POST /v1/chat/completions — works with vLLM, LiteLLM, llama.cpp server, etc."""
 
     def __init__(self, model: str, base_url: str, api_key: str | None = None, timeout_s: float = 180.0,
-                 client: httpx.Client | None = None):
+                 max_tokens: int = 512, client: httpx.Client | None = None):
         self.name = f"openai-compatible:{model}"
-        self.model = model
+        self.model, self.max_tokens = model, max_tokens
         headers = {"Authorization": f"Bearer {api_key}"} if api_key else {}
         self.client = client or httpx.Client(base_url=base_url, timeout=timeout_s, headers=headers)
 
     def chat(self, messages: list[Message]) -> str:
         resp = self.client.post("/v1/chat/completions", json={
-            "model": self.model, "messages": messages, "temperature": 0,
+            "model": self.model, "messages": messages, "temperature": 0, "max_tokens": self.max_tokens,
         })
         resp.raise_for_status()
         return resp.json()["choices"][0]["message"]["content"]

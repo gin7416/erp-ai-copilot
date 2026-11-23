@@ -8,7 +8,6 @@
 from __future__ import annotations
 
 import argparse
-import json
 import sys
 
 from ..llm import OllamaEmbedder, make_chat
@@ -38,6 +37,10 @@ def _retrieval(args) -> int:
     return 0
 
 
+def _suffix(args) -> str:
+    return f"_{args.tag}" if getattr(args, "tag", None) else ""
+
+
 def _sql(args) -> int:
     s = get_settings()
     if args.provider == "oracle":
@@ -52,7 +55,7 @@ def _sql(args) -> int:
               f"first_try={sm['first_attempt_acc']:.3f} fixed_by_retry={sm['fixed_by_retry']} "
               f"p50={sm['latency_p50_s']}s p95={sm['latency_p95_s']}s")
     if not args.no_write:
-        print("written:", write_json(f"eval_sql_{args.provider}.json", result))
+        print("written:", write_json(f"eval_sql_{args.provider}{_suffix(args)}.json", result))
     if args.min_accuracy is not None:
         worst = min(c["summary"]["lenient_acc"] for c in result["configs"].values())
         if worst < args.min_accuracy:
@@ -84,6 +87,7 @@ def main() -> int:
     q.add_argument("--base-url")
     q.add_argument("--configs", nargs="+", default=list(SQL_CONFIGS), choices=list(SQL_CONFIGS))
     q.add_argument("--min-accuracy", type=float)
+    q.add_argument("--tag", help="suffix for the result file name, e.g. the model size")
     q.add_argument("--no-write", action="store_true")
     sub.add_parser("report")
     args = p.parse_args()

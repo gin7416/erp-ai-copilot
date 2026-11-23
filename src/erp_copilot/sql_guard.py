@@ -28,7 +28,7 @@ def validate_sql(sql: str, allowed_tables: set[str], max_rows: int = 200) -> str
         raise SqlGuardError("empty SQL")
     try:
         statements = [s for s in sqlglot.parse(sql, read="duckdb") if s is not None]
-    except sqlglot.errors.ParseError as exc:
+    except sqlglot.errors.SqlglotError as exc:  # ParseError and TokenError (e.g. unbalanced quotes)
         raise SqlGuardError(f"SQL parse error: {str(exc).splitlines()[0]}") from None
     if len(statements) != 1:
         raise SqlGuardError(f"exactly one statement is allowed, got {len(statements)}")

@@ -41,19 +41,21 @@ flowchart LR
 | **RAG** `rag.py` | SOP 依章節切段；中文字元 bigram 的 BM25（不需斷詞套件）、bge-m3 向量檢索、兩者以 RRF 融合；回答必須附 [來源] 編號，找不到就說沒有 |
 | **API** `api.py` | `/sql`、`/ask/data`、`/search/sop`、`/ask/sop`、`/tables`、`/health`；互動文件 `/docs` |
 | **MCP server** `mcp_server.py` | 提供 `list_tables`、`run_sql`、`search_sop`、`ask_data` 四個唯讀工具，可接到 Claude Desktop 等 MCP 用戶端 |
-| **評測** `evaluation/` + `eval/` | 36 題中文 Text-to-SQL 黃金問答（易／中／難）以執行結果比對；26 題 SOP 檢索題（含 8 題換句話說的題目）計算 Hit@k、MRR；比較不同提示設定與檢索方法 |
+| **評測** `evaluation/` + `eval/` | 36 題中文 Text-to-SQL 黃金問答（易／中／難）以執行結果比對；26 題 SOP 檢索題（含 8 題換句話說的題目）計算 Hit@k、MRR |
 | **容器與 Kubernetes** `Dockerfile` + `k8s/` | 非 root 映像檔（建置時即產生資料倉儲與索引）；kustomize 管理 Namespace、ConfigMap、2 個副本的 API Deployment（就緒／存活探針、資源上下限、滾動更新不中斷）、Service，以及在叢集內執行整條資料管線與檢索檢查的 Job |
 
 ### 評測結果
 
 完整報告：[`results/EVAL_REPORT.md`](results/EVAL_REPORT.md)（可用下方指令在自己的電腦重跑）。
 
+> **關於測試題的來源：** 下面「自建測試題」的題目、標準答案、模擬資料和語意層說明都出自同一位作者，出題時已知道系統怎麼設計，因此數字可能高估真實使用時的準確率。
+
 **Text-to-SQL**：qwen2.5-coder 3B（Ollama，temperature 0）在 Apple M1 8GB 筆電上執行，36 題中文問題，以查詢結果是否與標準答案一致計分。
 
 | 提示設定 | SQL 可執行 | 答對（第一次） | 答對（含錯誤修正） | 延遲 p50／p95 |
 |---|---|---|---|---|
-| A. 只給表名與欄位型別 | 80.6% | 22.2%（8 題） | — | 2.9 秒／6.1 秒 |
-| B. ＋ dbt 語意層（欄位說明、商業規則、2 個範例）＋ 錯誤修正迴圈 | 86.1% | 63.9%（23 題） | **66.7%（24 題）** | 3.3 秒／9.1 秒 |
+| A. 只給表名與欄位型別 | 80.6% | 22.2%（8 題） | — | 3.8 秒／8.2 秒 |
+| B. ＋ dbt 語意層（欄位說明、商業規則、2 個範例）＋ 錯誤修正迴圈 | 86.1% | 63.9%（23 題） | **66.7%（24 題）** | 4.1 秒／11.7 秒 |
 
 - 語意層讓準確率從 22.2% 提高到 63.9%：小模型最常犯的錯是不知道商業規則（例如營收要排除已取消訂單），把規則寫進 dbt 欄位說明後大幅改善。
 - 錯誤修正迴圈只多救回 1 題；剩下的 12 題錯誤中，7 題是邏輯錯（SQL 能執行但答案不對），5 題是兩次都寫不出可執行的 SQL（例如少 JOIN 供應商表、捏造不存在的資料表），每一題的原因都列在報告裡。
@@ -77,7 +79,7 @@ flowchart LR
 python -m venv .venv && source .venv/bin/activate
 pip install -e ".[dev]"
 python -m erp_copilot.pipeline all        # 載入 → dbt build（含資料測試）→ SOP 索引
-pytest -q                                  # 64 項測試（另有 Airflow DAG 測試在 CI 執行）
+pytest -q                                  # 66 項測試（另有 Airflow DAG 測試在 CI 執行）
 ```
 
 啟用地端 LLM：
@@ -134,11 +136,11 @@ GitHub Actions 每次 push 執行四個工作：
 
 ### 限制與下一步
 
-- 使用 3B 參數小模型在筆電上執行，複雜問題（多表 JOIN、商業規則組合）仍會出錯；評測報告列出了仍答錯的題目與原因。
+- 使用 3B 參數小模型在筆電上執行：答對 66.7%，跨表查詢與日期計算仍常出錯；評測報告列出了答錯的題目與原因。
 - SOP 回答也用同一個 3B 程式碼模型，對換句話說的問題偏保守：例如問「可以把客戶報價貼到 ChatGPT 嗎？」時，正確段落已被檢索到第 2 名，模型仍回答「SOP 中沒有相關規定」。回答品質目前沒有納入自動評測（只評檢索），下一步是加入回答正確性評測並比較通用模型。
 - 尚未做使用者驗證與權限分級（例如列／欄層級權限、個資遮罩）。
 - Kubernetes 部署只在 CI 的 kind 單節點叢集驗證，沒有 Ingress、自動擴展與正式叢集的監控；資料倉儲是包在映像檔裡的唯讀檔案，正式環境應改由排程 Job 寫入共享儲存或資料庫。
-- 下一步：在 GPU 伺服器以 vLLM 部署較大模型並比較準確率與延遲；把黃金問答集擴充為業務單位共同維護的回歸測試。
+- 下一步：在 GPU 伺服器以 vLLM 部署較大模型並比較準確率與延遲；把測試題擴充為業務單位共同維護的回歸測試。
 
 ## English summary
 
@@ -147,8 +149,9 @@ CSV extracts → DuckDB `raw` → dbt `staging`/`marts` with 45 data tests and a
 Text-to-SQL with a dbt-derived semantic layer, a two-layer SQL guard (sqlglot + read-only DuckDB) and an
 error-feedback retry loop → RAG over SOP documents (Chinese bigram BM25, bge-m3 embeddings, RRF hybrid) →
 FastAPI and an MCP server. An Airflow 3 DAG orchestrates the pipeline. A golden set of 36 Chinese business
-questions and 26 SOP questions measures execution accuracy and retrieval quality with a local LLM (Ollama),
-and CI runs the tests on Python 3.11–3.13, executes the full DAG under Airflow, smoke-tests the Docker image, and
+questions and 26 SOP questions measures execution accuracy and retrieval quality with a local LLM (Ollama). The questions were written by the
+author, so the numbers may overestimate accuracy on real users' questions.
+CI runs the tests on Python 3.11–3.13, executes the full DAG under Airflow, smoke-tests the Docker image, and
 deploys the stack with kustomize to a kind Kubernetes cluster (2-replica API Deployment, Service, pipeline Job,
 non-root pods, rolling restart).
 All data is synthetic.

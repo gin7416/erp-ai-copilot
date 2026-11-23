@@ -4,13 +4,13 @@ from __future__ import annotations
 import re
 import time
 from dataclasses import asdict, dataclass, field
-from typing import Any
+from typing import Any, Protocol
 
 import duckdb
 
 from .llm import ChatModel, Message
 from .sql_guard import SqlGuardError
-from .warehouse import QueryResult, Warehouse
+from .warehouse import QueryResult
 
 SYSTEM_PROMPT = """你是企業資料分析助理，負責把使用者的中文問題轉成 DuckDB SQL。
 規則：
@@ -75,18 +75,27 @@ class SqlAnswer:
         return d
 
 
+class SqlExecutor(Protocol):
+    """Anything that validates and runs SQL: the DuckDB Warehouse, or a benchmark's SQLite database."""
+
+    def run(self, sql: str, max_rows: int = 200) -> QueryResult: ...
+
+
 class TextToSQL:
-    def __init__(self, chat: ChatModel, warehouse: Warehouse, schema: str, max_attempts: int = 2,
-                 few_shot: bool = True, max_rows: int = 200):
+    def __init__(self, chat: ChatModel, warehouse: SqlExecutor, schema: str, max_attempts: int = 2,
+                 few_shot: bool = True, max_rows: int = 200, system_prompt: str = SYSTEM_PROMPT,
+                 examples: list[tuple[str, str]] | None = None, retry_prompt: str = RETRY_PROMPT,
+                 execution_errors: tuple[type[Exception], ...] = (duckdb.Error,)):
         self.chat, self.warehouse = chat, warehouse
-        self.system = SYSTEM_PROMPT.format(schema=schema)
-        self.max_attempts, self.few_shot, self.max_rows = max_attempts, few_shot, max_rows
+        self.system = system_prompt.format(schema=schema)
+        self.max_attempts, self.max_rows = max_attempts, max_rows
+        self.examples = (FEW_SHOT if examples is None else examples) if few_shot else []
+        self.retry_prompt, self.execution_errors = retry_prompt, execution_errors
 
     def _messages(self, question: str) -> list[Message]:
         msgs: list[Message] = [{"role": "system", "content": self.system}]
-        if self.few_shot:
-            for q, sql in FEW_SHOT:
-                msgs += [{"role": "user", "content": q}, {"role": "assistant", "content": f"```sql\n{sql}\n```"}]
+        for q, sql in self.examples:
+            msgs += [{"role": "user", "content": q}, {"role": "assistant", "content": f"```sql\n{sql}\n```"}]
         msgs.append({"role": "user", "content": question})
         return msgs
 
@@ -106,14 +115,14 @@ class TextToSQL:
                     result = self.warehouse.run(sql, max_rows=self.max_rows)
                 except SqlGuardError as exc:
                     attempt.error_type, attempt.error = "guard", str(exc)
-                except duckdb.Error as exc:
-                    attempt.error_type, attempt.error = "execution", str(exc).splitlines()[0][:300]
+                except self.execution_errors as exc:
+                    attempt.error_type, attempt.error = "execution", (str(exc).splitlines() or [""])[0][:300]
                 else:
                     answer.ok, answer.sql = True, result.sql
                     answer.columns, answer.rows = result.columns, result.rows
                     break
             messages = messages + [{"role": "assistant", "content": raw},
-                                   {"role": "user", "content": RETRY_PROMPT.format(error=attempt.error)}]
+                                   {"role": "user", "content": self.retry_prompt.format(error=attempt.error)}]
         if not answer.ok and answer.attempts:
             answer.sql = answer.attempts[-1].sql or None
         answer.latency_s = round(time.perf_counter() - started, 3)

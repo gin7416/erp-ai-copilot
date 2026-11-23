@@ -26,6 +26,7 @@ TABLES = {"fct_sales", "dim_customers"}
     "SELECT * FROM other_db.marts.fct_sales",
     "",
     "this is not sql",
+    "SELECT * FROM marts.fct_sales WHERE status = 'it's open'",   # unbalanced quote -> tokenizer error
 ])
 def test_rejects_unsafe_sql(sql):
     with pytest.raises(SqlGuardError):

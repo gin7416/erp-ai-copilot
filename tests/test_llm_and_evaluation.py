@@ -66,3 +66,9 @@ def test_oracle_scores_100_percent(settings):
 def test_bm25_retrieval_regression_gate(settings):
     result = evaluate_retrieval(SopIndex.from_directory(settings.sop_dir), ["bm25"])
     assert result["modes"]["bm25"]["hit@3"] >= 0.8
+
+
+def test_report_renders_committed_results():
+    from erp_copilot.evaluation.report import render
+    text = render()
+    assert "In-house Text-to-SQL" in text and "In-house SOP retrieval" in text
